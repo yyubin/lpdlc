@@ -1,0 +1,21 @@
+persona "Test" {
+  sinner "Test"
+  grade 3
+
+  skill 1 "Test" {
+    category ATTACK
+    sin WRATH
+    attack PIERCE
+
+    sync SYNC_1 {
+      basePower 5
+      coinPower 3
+      coinCount 1
+
+      effect {
+        trigger ON_USE
+        target apply BLEED ADD 2
+      }
+    }
+  }
+}

@@ -1,0 +1,135 @@
+// 예시: "홍루의 3스킬 '오베르튀레'는 출혈을 강화하며, 공격 종료 시 경혈 갑주를 소모한다."
+
+persona "홍루" {
+  sinner "홍루"
+  grade 3★
+  sin WRATH
+  release "2023-02-27"
+  maxLevel 50
+
+  // PersonaJpa 매핑 필드들
+  resistance {
+    slash NORMAL,
+    pierce WEAK,
+    blunt RESIST
+  }
+
+  speed {
+    min 3,
+    max 5
+  }
+
+  health {
+    base 80,
+    growth 7.5,
+    disturbed [30, 50, 70]
+  }
+
+  season {
+    type BATTLE_PASS,
+    number 1
+  }
+
+  // 이미지 정보
+  image {
+    type ICON,
+    url "https://example.com/honglu_icon.png",
+    priority 1,
+    primary true
+  }
+
+  // 3스킬: 오베르튀레
+  skill 3 "오베르튀레" {
+    category ATTACK
+    sin WRATH
+    attack PIERCE
+    quantity 2
+    keyword BLEED
+
+    sync SYNC_4 {
+      basePower 5
+      coinPower 8
+      coinCount 3
+      weight 1
+      level 40
+
+      // 스킬 전체 효과: 출혈을 강화
+      effect "출혈 강화" {
+        trigger ON_USE
+
+        // 자신의 출혈 스택을 모든 적에게 추가 데미지로 적용
+        target apply BLEED_AMPLIFY ADD 1.5 cap 10
+      }
+
+      // 스킬 전체 효과: 공격 종료 시 경혈 갑주를 소모
+      effect "경혈 갑주 소모" {
+        trigger ON_ATTACK_END
+
+        branch {
+          order 1
+          stopOnMatch true
+          when self.CHARGE >= 10
+          self remove CHARGE 10
+        }
+
+        branch {
+          order 2
+          stopOnMatch false
+          when self.CHARGE > 0 AND self.CHARGE < 10
+          self remove CHARGE self.CHARGE
+        }
+      }
+
+      // 코인 1
+      coin 1 POSITIVE {
+        effect {
+          trigger ON_HIT
+          target apply BLEED ADD 2 nextTurn false
+        }
+      }
+
+      // 코인 2
+      coin 2 POSITIVE {
+        effect {
+          trigger ON_HIT
+          target apply BLEED ADD 3 nextTurn false
+          modify power +30
+        }
+      }
+
+      // 코인 3
+      coin 3 POSITIVE {
+        effect {
+          trigger ON_HIT
+
+          branch {
+            order 1
+            when target.BLEED >= 5
+            target apply BLEED ADD 5 nextTurn false
+            modify power +50
+          }
+
+          branch {
+            order 2
+            target apply BLEED ADD 3 nextTurn false
+          }
+        }
+      }
+    }
+  }
+
+  // 패시브: 출혈 전문가
+  passive SUPPORT "출혈 전문가" {
+    trigger BATTLE_START
+
+    when self.HP > 50
+
+    branch {
+      order 1
+      when all_allies.BLEED_COUNT >= 3
+      self apply ATTACK_POWER ADD 20 duration 3
+    }
+
+    self apply BLEED_RESISTANCE ADD 1 duration 999
+  }
+}

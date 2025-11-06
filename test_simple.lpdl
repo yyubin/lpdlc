@@ -1,0 +1,4 @@
+persona "테스트" {
+  sinner "홍루"
+  grade 3
+}
