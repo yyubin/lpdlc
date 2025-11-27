@@ -302,7 +302,18 @@ actionSimple
     ;
 
 targetSpec
-    : SELF | TARGET | ALLY | ENEMY | ALL_ALLIES | ALL_ENEMIES
+    : SELF
+    | TARGET
+    | ALLY
+    | ENEMY
+    | ALL_ALLIES
+    | ALL_ENEMIES
+    | SELF_ALLY
+    | ANY
+    | RIGHT_ALLY
+    | LEFT_ALLY
+    | LOWEST_HP_ALLY
+    | HIGHEST_RESONANCE
     ;
 
 verbSpec
@@ -327,6 +338,26 @@ actionOptions
     | DURATION additiveExpr
     | SCOPE targetSpec
     | PRIORITY INT
+    | UNIT unitType
+    | TIMING timingType
+    | SELECT selectorType (FROM targetSpec)?
+    | COINS coinSelectorType
+    ;
+
+unitType
+    : IDENT  // STACK, FLAT, PERCENT, PERCENT_OF_MAX_HP, PERCENT_OF_DAMAGE, PER_N, PER_3, PER_10, UNITLESS
+    ;
+
+timingType
+    : IDENT  // IMMEDIATE, THIS_TURN, NEXT_TURN, TURN_END, NEXT_COIN, ATTACK_END
+    ;
+
+selectorType
+    : IDENT  // ALL, RANDOM, HIGHEST, LOWEST, FASTEST, SLOWEST, FIRST, LAST
+    ;
+
+coinSelectorType
+    : IDENT  // ALL, FIRST, LAST, INDEX, CURRENT
     ;
 
 // ── CONDITION EXPRESSION (재귀적, 우선순위: NOT > AND > OR) ───────────────
@@ -348,11 +379,36 @@ conditionNot
 conditionAtom
     : LPAREN conditionExpr RPAREN
     | comparison
+    | rangeCheck
+    | divisibilityCheck
+    | tagCheck
+    | statusCheck
     | presenceCheck
     ;
 
 comparison
     : side comparator side
+    ;
+
+// 범위 체크: 5 <= self.HP < 10 또는 self.HP in 5..10
+rangeCheck
+    : side IN side DOTDOT side           // self.HP in 5..10
+    | side IN LBRACK side COMMA side RBRACK  // self.HP in [5, 10]
+    ;
+
+// 나누어떨어짐: self.CHARGE divisible_by 5
+divisibilityCheck
+    : side DIVISIBLE_BY side
+    ;
+
+// 태그 보유: target has_tag "BOSS"
+tagCheck
+    : side HAS_TAG (stringLiteral | IDENT)
+    ;
+
+// 상태 이상 보유: target has_status STUNNED
+statusCheck
+    : side HAS_STATUS IDENT
     ;
 
 presenceCheck
@@ -365,7 +421,18 @@ side
     ;
 
 sidePrefix
-    : SELF | TARGET | ALLY | ENEMY | ALL_ALLIES | ALL_ENEMIES
+    : SELF
+    | TARGET
+    | ALLY
+    | ENEMY
+    | ALL_ALLIES
+    | ALL_ENEMIES
+    | SELF_ALLY
+    | ANY
+    | RIGHT_ALLY
+    | LEFT_ALLY
+    | LOWEST_HP_ALLY
+    | HIGHEST_RESONANCE
     ;
 
 sideCore
@@ -512,28 +579,44 @@ NEXTTURN    : 'nextTurn' ;
 DURATION    : 'duration' ;
 SCOPE       : 'scope' ;
 PRIORITY    : 'priority' ;
+UNIT        : 'unit' ;
+TIMING      : 'timing' ;
+SELECT      : 'select' ;
+FROM        : 'from' ;
+COINS       : 'coins' ;
 
-SELF        : 'self' ;
-TARGET      : 'target' ;
-ALLY        : 'ally' ;
-ENEMY       : 'enemy' ;
-ALL_ALLIES  : 'all_allies' ;
-ALL_ENEMIES : 'all_enemies' ;
+// Target keywords
+SELF               : 'self' ;
+TARGET             : 'target' ;
+ALLY               : 'ally' ;
+ENEMY              : 'enemy' ;
+ALL_ALLIES         : 'all_allies' ;
+ALL_ENEMIES        : 'all_enemies' ;
+SELF_ALLY          : 'self_ally' ;
+ANY                : 'any' ;
+RIGHT_ALLY         : 'right_ally' ;
+LEFT_ALLY          : 'left_ally' ;
+LOWEST_HP_ALLY     : 'lowest_hp_ally' ;
+HIGHEST_RESONANCE  : 'highest_resonance' ;
 
 // Operators
-EQ    : '==' ;
-NEQ   : '!=' ;
-GTE   : '>=' ;
-LTE   : '<=' ;
-GT    : '>' ;
-LT    : '<' ;
-AND   : 'AND' ;
-OR    : 'OR' ;
-NOT   : 'NOT' ;
-PLUS  : '+' ;
-MINUS : '-' ;
-MUL   : '*' ;
-DIV   : '/' ;
+EQ           : '==' ;
+NEQ          : '!=' ;
+GTE          : '>=' ;
+LTE          : '<=' ;
+GT           : '>' ;
+LT           : '<' ;
+AND          : 'AND' ;
+OR           : 'OR' ;
+NOT          : 'NOT' ;
+IN           : 'in' ;
+DIVISIBLE_BY : 'divisible_by' ;
+HAS_TAG      : 'has_tag' ;
+HAS_STATUS   : 'has_status' ;
+PLUS         : '+' ;
+MINUS        : '-' ;
+MUL          : '*' ;
+DIV          : '/' ;
 
 // Delimiters
 LBRACE : '{' ;
@@ -546,6 +629,7 @@ STAR   : '★' ;
 COMMA  : ',' ;
 COLON  : ':' ;
 DOT    : '.' ;
+DOTDOT : '..' ;
 
 // Literals
 fragment DIGIT : [0-9] ;

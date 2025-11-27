@@ -718,6 +718,46 @@ public interface LPDLListener extends ParseTreeListener {
 	 */
 	void exitActionOptions(LPDLParser.ActionOptionsContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link LPDLParser#unitType}.
+	 * @param ctx the parse tree
+	 */
+	void enterUnitType(LPDLParser.UnitTypeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LPDLParser#unitType}.
+	 * @param ctx the parse tree
+	 */
+	void exitUnitType(LPDLParser.UnitTypeContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LPDLParser#timingType}.
+	 * @param ctx the parse tree
+	 */
+	void enterTimingType(LPDLParser.TimingTypeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LPDLParser#timingType}.
+	 * @param ctx the parse tree
+	 */
+	void exitTimingType(LPDLParser.TimingTypeContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LPDLParser#selectorType}.
+	 * @param ctx the parse tree
+	 */
+	void enterSelectorType(LPDLParser.SelectorTypeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LPDLParser#selectorType}.
+	 * @param ctx the parse tree
+	 */
+	void exitSelectorType(LPDLParser.SelectorTypeContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LPDLParser#coinSelectorType}.
+	 * @param ctx the parse tree
+	 */
+	void enterCoinSelectorType(LPDLParser.CoinSelectorTypeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LPDLParser#coinSelectorType}.
+	 * @param ctx the parse tree
+	 */
+	void exitCoinSelectorType(LPDLParser.CoinSelectorTypeContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link LPDLParser#conditionExpr}.
 	 * @param ctx the parse tree
 	 */
@@ -777,6 +817,46 @@ public interface LPDLListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitComparison(LPDLParser.ComparisonContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LPDLParser#rangeCheck}.
+	 * @param ctx the parse tree
+	 */
+	void enterRangeCheck(LPDLParser.RangeCheckContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LPDLParser#rangeCheck}.
+	 * @param ctx the parse tree
+	 */
+	void exitRangeCheck(LPDLParser.RangeCheckContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LPDLParser#divisibilityCheck}.
+	 * @param ctx the parse tree
+	 */
+	void enterDivisibilityCheck(LPDLParser.DivisibilityCheckContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LPDLParser#divisibilityCheck}.
+	 * @param ctx the parse tree
+	 */
+	void exitDivisibilityCheck(LPDLParser.DivisibilityCheckContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LPDLParser#tagCheck}.
+	 * @param ctx the parse tree
+	 */
+	void enterTagCheck(LPDLParser.TagCheckContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LPDLParser#tagCheck}.
+	 * @param ctx the parse tree
+	 */
+	void exitTagCheck(LPDLParser.TagCheckContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LPDLParser#statusCheck}.
+	 * @param ctx the parse tree
+	 */
+	void enterStatusCheck(LPDLParser.StatusCheckContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LPDLParser#statusCheck}.
+	 * @param ctx the parse tree
+	 */
+	void exitStatusCheck(LPDLParser.StatusCheckContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link LPDLParser#presenceCheck}.
 	 * @param ctx the parse tree

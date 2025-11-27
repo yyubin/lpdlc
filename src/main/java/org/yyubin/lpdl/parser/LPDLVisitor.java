@@ -437,6 +437,30 @@ public interface LPDLVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitActionOptions(LPDLParser.ActionOptionsContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link LPDLParser#unitType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitUnitType(LPDLParser.UnitTypeContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LPDLParser#timingType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTimingType(LPDLParser.TimingTypeContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LPDLParser#selectorType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSelectorType(LPDLParser.SelectorTypeContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LPDLParser#coinSelectorType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCoinSelectorType(LPDLParser.CoinSelectorTypeContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link LPDLParser#conditionExpr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -472,6 +496,30 @@ public interface LPDLVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitComparison(LPDLParser.ComparisonContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LPDLParser#rangeCheck}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRangeCheck(LPDLParser.RangeCheckContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LPDLParser#divisibilityCheck}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDivisibilityCheck(LPDLParser.DivisibilityCheckContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LPDLParser#tagCheck}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTagCheck(LPDLParser.TagCheckContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LPDLParser#statusCheck}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStatusCheck(LPDLParser.StatusCheckContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link LPDLParser#presenceCheck}.
 	 * @param ctx the parse tree
