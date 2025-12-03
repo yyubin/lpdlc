@@ -93,20 +93,39 @@ public class RDBExporter extends LPDLBaseVisitor<Void> {
         return null;
     }
 
+    private static final Map<String, Integer> SINNER_ID_MAP = Map.ofEntries(
+            Map.entry("이상", 1),
+            Map.entry("파우스트", 2),
+            Map.entry("돈키호테", 3),
+            Map.entry("료슈", 4),
+            Map.entry("뫼르소", 5),
+            Map.entry("홍루", 6),
+            Map.entry("히스클리프", 7),
+            Map.entry("이스마엘", 8),
+            Map.entry("로쟈", 9),
+            Map.entry("싱클레어", 10),
+            Map.entry("오티스", 11),
+            Map.entry("그레고르", 12)
+    );
+
     @Override
     public Void visitSinnerStmt(LPDLParser.SinnerStmtContext ctx) {
         long personaId = context.getCurrentPersonaId();
         SQLVariable personaVar = new SQLVariable("persona_" + personaId);
 
         String sinnerName = ctx.stringLiteral() != null
-            ? extractString(ctx.stringLiteral())
-            : ctx.IDENT().getText();
+                ? extractString(ctx.stringLiteral())
+                : ctx.IDENT().getText();
 
-        // UPDATE persona SET sinner_name
+        Integer sinnerId = SINNER_ID_MAP.get(sinnerName);
+        if (sinnerId == null) {
+            throw new IllegalArgumentException("Unknown sinner name: " + sinnerName);
+        }
+
         sqlGenerator.update("persona")
-            .set("sinner_name", sinnerName)
-            .where("id", personaVar)
-            .generate();
+                .set("sinner_id", sinnerId)
+                .where("id", personaVar)
+                .generate();
 
         return null;
     }
