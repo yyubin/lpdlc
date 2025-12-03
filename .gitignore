@@ -43,3 +43,5 @@ bin/
 .DS_Store
 
 gradlew.bat
+# Environment variables
+.env
