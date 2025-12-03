@@ -93,8 +93,9 @@ compiler.export(ExportType.RDB, dataSource);
 
 * [x] LPDL 문법 정의 (ANTLR 4)
 * [x] 파서 및 기본 테스트 구현
-* [ ] AST → 도메인 모델 매핑
-* [ ] RDB / Neo4j Exporter 추가
+* [x] AST → 도메인 모델 매핑
+* [x] RDB Exporter 추가
+* [ ] Neo4j Exporter 추가
 * [ ] LLM 기반 LPDL 생성 파이프라인 연결
 * [ ] CLI 및 Gradle Plugin 지원
 

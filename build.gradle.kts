@@ -1,6 +1,7 @@
 plugins {
     id("java")
     id("antlr")
+    id("application")
 }
 
 group = "org.yyubin"
@@ -26,4 +27,8 @@ tasks.generateGrammarSource {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+application {
+    mainClass.set("org.yyubin.lpdl.Main")
 }
