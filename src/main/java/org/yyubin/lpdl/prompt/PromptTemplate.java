@@ -98,7 +98,7 @@ public class PromptTemplate {
                   coinPower 8
                   coinCount 3
                   weight 1
-                  level 40
+                  level 3
                 }
               }
             }

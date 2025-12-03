@@ -50,13 +50,13 @@ public class LPDLGrammarSpec {
 
               // 시즌
               season {
-                type BATTLE_PASS|WALPURGIS|EXTRACTION|...,
+                type NORMAL|SEASON_NORMAL|SEASON_EVENT|WALPURGISNACHT,
                 number 숫자
               }
 
               // 이미지 (여러 개 가능)
               image {
-                type ICON|PORTRAIT|SPLASH|...,
+                type A|B|AC|BC|SD,
                 url "https://...",
                 priority 숫자,
                 primary true|false
@@ -81,17 +81,17 @@ public class LPDLGrammarSpec {
               sin WRATH|LUST|SLOTH|GREED|GLOOM|PRIDE|ENVY
               attack SLASH|PIERCE|BLUNT    // ATTACK 스킬만
               defense EVADE|COUNTER|GUARD  // DEFENSE 스킬만
-              quantity 1|2|3               // 타겟 수
-              keyword BLEED|CHARGE|TREMOR|...
+              quantity 1|2|3               // 스킬 개수
+              keyword BLEED|CHARGE|BREATHE|...
               image "URL" 또는 none
 
               // === Sync 레벨별 스탯 ===
-              sync SYNC_1|SYNC_2|SYNC_3|SYNC_4|SYNC_5 {
+              sync SYNC_3|SYNC_4 {
                 basePower 숫자
                 coinPower 숫자
                 coinCount 숫자
                 weight 숫자
-                level 숫자
+                level 숫자 // skill의 번호와 같음
 
                 // 스킬 전체 효과 (여러 개 가능)
                 effect "효과 이름" {
@@ -102,7 +102,7 @@ public class LPDLGrammarSpec {
                 }
 
                 // 코인별 효과 (여러 개 가능)
-                coin 번호 NORMAL|POSITIVE|NEGATIVE|INVINCIBLE {
+                coin 번호 NORMAL|UNBREAKABLE|REUSE { // 일반 코인|파괴불가 코인|재사용 코인
                   effect "효과 이름" {
                     trigger ON_HIT|...
                     <actions>
@@ -117,14 +117,31 @@ public class LPDLGrammarSpec {
             ## Effect 시스템
 
             ### Trigger (트리거)
-            - `ON_USE` - 스킬 사용 시
-            - `ON_HIT` - 공격 적중 시
+
+            **스킬 트리거**
+            - `ON_HIT` - 적중시
+            - `ON_CRITICAL_HIT` - 크리티컬 적중시
+            - `ON_HEAD_HIT` - 앞면 적중시
+            - `ON_TAIL_HIT` - 뒷면 적중시
+            - `ON_USE` - 사용시
+            - `ON_WIN_CLASH` - 합 승리시
+            - `ON_WIN_CLASH_HIT` - 합 승리 적중시
+            - `ON_LOSE_CLASH` - 합 패배시
+            - `ON_DROP` - 이 스킬이 버려지면
             - `ON_ATTACK_END` - 공격 종료 시
             - `ON_KILL` - 적 처치 시
+
+            **패시브 트리거**
+            - `ON_BATTLE_START` - 전투 시작 시
             - `ON_TURN_START` - 턴 시작 시
             - `ON_TURN_END` - 턴 종료 시
-            - `BATTLE_START` - 전투 시작 시
-            - `ON_DAMAGE_TAKEN` - 피해 받을 시
+            - `ON_ALLY_ATTACK` - 아군이 공격을 가할 시
+            - `ON_ALLY_HIT` - 아군이 적중 시
+            - `ON_ALLY_KILL` - 아군이 적 처치 시
+            - `ON_DAMAGED` - 피격 시
+            - `ON_STATUS_INFLICTED` - 상태 이상 부여 시
+            - `ON_STATUS_RECEIVED` - 상태 이상 받을 시
+            - `ALWAYS` - 전투 중 (항상 활성)
 
             ### Action 문법
 
@@ -213,27 +230,56 @@ public class LPDLGrammarSpec {
 
             ## 버프/디버프 종류
 
-            ### 일반 버프
-            - `HP_HEAL` - 체력 회복
+            ### 상태 이상 관리
+            - `STATUS_INFLICT` - 상태 이상 부여
+            - `STATUS_REMOVE` - 상태 해제
+
+            ### 스탯 버프/디버프
             - `ATTACK_POWER` - 공격력
+            - `BUFF_DAMAGE_UP` - 공격력 증가
+            - `BUFF_DAMAGE_DOWN` - 공격력 감소
             - `DEFENSE` - 방어력
+            - `BUFF_DEFENSE_UP` - 방어력 증가
+            - `BUFF_DEFENSE_DOWN` - 방어력 감소
             - `SPEED` - 속도
             - `DAMAGE_UP` - 데미지 증가
+
+            ### 리소스 관리
+            - `CHARGE` - 충전
+            - `BREATH` - 호흡
+            - `RESOURCE_GAIN` - 자원 획득 (충전, 경혈 등)
+            - `RESOURCE_CONSUME` - 자원 소모
+            - `RESOURCE_SET` - 자원 설정 (고정값으로)
+
+            ### 피해/회복
+            - `HP_HEAL` - 체력 회복
+            - `HEAL_HP` - 체력 회복
+            - `CONSUME_HP` - 체력 소모
+            - `DAMAGE_MODIFY` - 피해량 변경 (%)
+            - `POWER_MODIFY` - 위력 변경
+
+            ### 코인 관련
+            - `COIN_POWER_UP` - 코인 위력 +
+            - `CLASH_POWER_UP` - 합 위력 +
 
             ### 디버프/상태이상
             - `BLEED` - 출혈
             - `BURN` - 화상
             - `TREMOR` - 진동
             - `RUPTURE` - 파열
-            - `SINKING` - 침수
-            - `CHARGE` - 차지
-            - `POISE` - 균형
+            - `SINKING` - 침잠
 
             ### 특수 상태
             - `BLEED_AMPLIFY` - 출혈 증폭
             - `BLEED_COUNT` - 출혈 카운트
             - `BLEED_RESISTANCE` - 출혈 저항
             - `IS_STAGGERED` - 경직 상태
+
+            ### 특수 효과
+            - `COMMAND_ATTACK` - 원호 공격 명령
+            - `TRANSFORM_SKILL` - 스킬 변환
+            - `SUPPRESS_EFFECT` - 기존 효과 억제
+            - `ETC` - 기타
 
             ---
 
