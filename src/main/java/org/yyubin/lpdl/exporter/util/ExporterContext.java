@@ -18,6 +18,7 @@ public class ExporterContext {
     private final Deque<Long> effectIdStack;
     private final Deque<Long> branchIdStack;
     private final Deque<Long> coinIdStack;
+    private final Deque<Long> passiveIdStack;
 
     // Neo4j용 변수명 스택 (향후 사용)
     private final Deque<String> personaVarStack;
@@ -30,6 +31,7 @@ public class ExporterContext {
         this.effectIdStack = new ArrayDeque<>();
         this.branchIdStack = new ArrayDeque<>();
         this.coinIdStack = new ArrayDeque<>();
+        this.passiveIdStack = new ArrayDeque<>();
         this.personaVarStack = new ArrayDeque<>();
         this.skillVarStack = new ArrayDeque<>();
     }
@@ -180,6 +182,29 @@ public class ExporterContext {
         return !coinIdStack.isEmpty();
     }
 
+    // ─── Passive ───
+    public void enterPassive(long id) {
+        passiveIdStack.push(id);
+    }
+
+    public void exitPassive() {
+        if (passiveIdStack.isEmpty()) {
+            throw new IllegalStateException("Cannot exit passive: stack is empty");
+        }
+        passiveIdStack.pop();
+    }
+
+    public long getCurrentPassiveId() {
+        if (passiveIdStack.isEmpty()) {
+            throw new IllegalStateException("No current passive");
+        }
+        return passiveIdStack.peek();
+    }
+
+    public boolean hasPassive() {
+        return !passiveIdStack.isEmpty();
+    }
+
     // ─── Neo4j 변수 (향후 사용) ───
     public void enterPersonaVar(String var) {
         personaVarStack.push(var);
@@ -200,6 +225,7 @@ public class ExporterContext {
         effectIdStack.clear();
         branchIdStack.clear();
         coinIdStack.clear();
+        passiveIdStack.clear();
         personaVarStack.clear();
         skillVarStack.clear();
     }

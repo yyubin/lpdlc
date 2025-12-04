@@ -473,7 +473,7 @@ public class RDBExporter extends LPDLBaseVisitor<Void> {
             .value("skill_id", skillVar)
             .generateWithAutoId(syncVar);
 
-        // UPDATE to set sync_level
+        // UPDATE to set syncLevel
         SQLVariable syncVarObj = new SQLVariable(syncVar);
         sqlGenerator.update("skill_stats_by_sync")
             .set("sync_level", syncLevel)
@@ -562,79 +562,59 @@ public class RDBExporter extends LPDLBaseVisitor<Void> {
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // EFFECT
+    // TEXT DECLARATION (원문 텍스트 저장)
     // ═══════════════════════════════════════════════════════════════
 
     @Override
+    public Void visitTextDecl(LPDLParser.TextDeclContext ctx) {
+        String originalText = extractTripleString(ctx.tripleStringLiteral());
+
+        // Context에 따라 다른 테이블에 저장
+        if (context.hasCoin()) {
+            // Coin 내부의 text
+            long coinId = context.getCurrentCoinId();
+            SQLVariable coinVar = new SQLVariable("skill_coin_" + coinId);
+            long descId = idManager.nextId("coin_description");
+            String descVar = "coin_description_" + descId;
+
+            sqlGenerator.insert("coin_description")
+                .value("skill_coin_id", coinVar)
+                .value("original_text", originalText)
+                .generateWithAutoId(descVar);
+        } else if (context.hasSync()) {
+            // Sync 레벨 내부의 text (스킬 설명)
+            long syncId = context.getCurrentSyncId();
+            SQLVariable syncVar = new SQLVariable("skill_stats_by_sync_" + syncId);
+            long descId = idManager.nextId("skill_description");
+            String descVar = "skill_description_" + descId;
+
+            sqlGenerator.insert("skill_description")
+                .value("stats_by_sync_id", syncVar)
+                .value("original_text", originalText)
+                .generateWithAutoId(descVar);
+        }
+        // passive의 text는 visitPassiveDecl에서 처리
+
+        return null;
+    }
+
+    // Effect와 Action 관련 visitor는 제거하고 무시하도록 처리
+    @Override
     public Void visitEffectDecl(LPDLParser.EffectDeclContext ctx) {
-        long syncId = context.getCurrentSyncId();
-        SQLVariable syncVar = new SQLVariable("skill_stats_by_sync_" + syncId);
-        long effectId = idManager.nextId("skill_effect");
-        String effectVar = "skill_effect_" + effectId;
-        context.enterEffect(effectId);
-
-        // Effect name (header가 있으면 사용)
-        String effectName = "";
-        if (ctx.effectHeader() != null && ctx.effectHeader().stringLiteral() != null) {
-            effectName = extractString(ctx.effectHeader().stringLiteral());
-        }
-
-        // INSERT skill_effect (id는 AUTO_INCREMENT)
-        sqlGenerator.insert("skill_effect")
-            .value("stats_by_sync_id", syncVar)
-            .value("name", effectName)
-            .generateWithAutoId(effectVar);
-
-        // effect body 순회 (trigger, when, action 등)
-        if (ctx.effectBody() != null) {
-            for (var stmt : ctx.effectBody().effectStmt()) {
-                visit(stmt);
-            }
-        }
-
-        context.exitEffect();
+        // Effect는 RDB에서 파싱하지 않고 무시
+        // (Neo4j에서만 처리 예정)
         return null;
     }
 
     @Override
     public Void visitTriggerStmt(LPDLParser.TriggerStmtContext ctx) {
-        long effectId = context.getCurrentEffectId();
-        SQLVariable effectVar = new SQLVariable("skill_effect_" + effectId);
-        String trigger = ctx.IDENT().getText();
-
-        // trigger를 JSON으로 저장 (간단한 버전)
-        String triggerJson = String.format("{\"trigger\":\"%s\"}", trigger);
-
-        sqlGenerator.update("skill_effect")
-            .set("trigger_json", triggerJson)
-            .where("id", effectVar)
-            .generate();
-
+        // 무시
         return null;
     }
 
     @Override
     public Void visitActionSimple(LPDLParser.ActionSimpleContext ctx) {
-        long effectId = context.getCurrentEffectId();
-        SQLVariable effectVar = new SQLVariable("skill_effect_" + effectId);
-        long actionId = idManager.nextId("effect_action");
-        String actionVar = "effect_action_" + actionId;
-
-        // INSERT effect_action (id는 AUTO_INCREMENT)
-        sqlGenerator.insert("effect_action")
-            .value("effect_id", effectVar)
-            .generateWithAutoId(actionVar);
-
-        // action을 JSON으로 저장 (간단한 버전 - 전체 텍스트를 저장)
-        String actionText = ctx.getText();
-        String actionJson = String.format("{\"action\":\"%s\"}", actionText.replace("\"", "\\\""));
-
-        SQLVariable actionVarObj = new SQLVariable(actionVar);
-        sqlGenerator.update("effect_action")
-            .set("action_json", actionJson)
-            .where("id", actionVarObj)
-            .generate();
-
+        // 무시
         return null;
     }
 
@@ -656,8 +636,8 @@ public class RDBExporter extends LPDLBaseVisitor<Void> {
         // INSERT skill_coin (id는 AUTO_INCREMENT)
         sqlGenerator.insert("skill_coin")
             .value("stats_by_sync_id", syncVar)
-            .value("coin_number", coinNumber)
-            .value("damage_type", damageType)
+            .value("order_index", coinNumber)
+            .value("coin_type", damageType)
             .generateWithAutoId(coinVar);
 
         // coin body 순회
@@ -673,35 +653,8 @@ public class RDBExporter extends LPDLBaseVisitor<Void> {
 
     @Override
     public Void visitEffectInlineDecl(LPDLParser.EffectInlineDeclContext ctx) {
-        // Coin 내부의 effect인 경우
-        if (context.hasCoin()) {
-            long coinId = context.getCurrentCoinId();
-            SQLVariable coinVar = new SQLVariable("skill_coin_" + coinId);
-            long effectId = idManager.nextId("coin_effect");
-            String effectVar = "coin_effect_" + effectId;
-
-            // Effect name
-            String effectName = "";
-            if (ctx.effectInlineHeader() != null && ctx.effectInlineHeader().stringLiteral() != null) {
-                effectName = extractString(ctx.effectInlineHeader().stringLiteral());
-            }
-
-            // INSERT coin_effect (id는 AUTO_INCREMENT)
-            sqlGenerator.insert("coin_effect")
-                .value("coin_id", coinVar)
-                .value("name", effectName)
-                .generateWithAutoId(effectVar);
-
-            // effect body는 간단히 JSON으로 저장 (상세 구현은 추후)
-            if (ctx.effectBody() != null) {
-                String bodyJson = String.format("{\"body\":\"%s\"}", ctx.effectBody().getText().replace("\"", "\\\""));
-                SQLVariable effectVarObj = new SQLVariable(effectVar);
-                sqlGenerator.update("coin_effect")
-                    .set("effect_json", bodyJson)
-                    .where("id", effectVarObj)
-                    .generate();
-            }
-        }
+        // Effect는 RDB에서 파싱하지 않고 무시
+        // text 블록을 사용하여 원문을 저장하도록 변경
         return null;
     }
 
@@ -715,8 +668,9 @@ public class RDBExporter extends LPDLBaseVisitor<Void> {
         SQLVariable personaVar = new SQLVariable("persona_" + personaId);
         long passiveId = idManager.nextId("persona_passive");
         String passiveVar = "persona_passive_" + passiveId;
+        context.enterPassive(passiveId);
 
-        String passiveType = ctx.IDENT().getText(); // NORMAL, SUPPORT, etc.
+        String kind = ctx.IDENT().getText(); // NORMAL, SUPPORT
 
         // Passive name
         String passiveName = "";
@@ -727,19 +681,30 @@ public class RDBExporter extends LPDLBaseVisitor<Void> {
         // INSERT persona_passive (id는 AUTO_INCREMENT)
         sqlGenerator.insert("persona_passive")
             .value("persona_id", personaVar)
-            .value("passive_type", passiveType)
+            .value("kind", kind)
             .value("name", passiveName)
             .generateWithAutoId(passiveVar);
 
-        // passive body 순회
+        // passive body 순회 - text를 찾아서 passive_description에 저장
         if (ctx.passiveBody() != null) {
-            context.enterEffect(passiveId); // passive의 effect 처리를 위해
             for (var stmt : ctx.passiveBody().passiveStmt()) {
-                visit(stmt);
+                if (stmt.textDecl() != null) {
+                    // passive_description 테이블에 저장
+                    String originalText = extractTripleString(stmt.textDecl().tripleStringLiteral());
+                    long descId = idManager.nextId("passive_description");
+                    String descVar = "passive_description_" + descId;
+
+                    sqlGenerator.insert("passive_description")
+                        .value("persona_passive_id", new SQLVariable(passiveVar))
+                        .value("original_text", originalText)
+                        .generateWithAutoId(descVar);
+                } else {
+                    // 다른 stmt는 무시 (trigger, action 등)
+                }
             }
-            context.exitEffect();
         }
 
+        context.exitPassive();
         return null;
     }
 
@@ -758,6 +723,26 @@ public class RDBExporter extends LPDLBaseVisitor<Void> {
         String raw = ctx.STRING().getText();
         // 앞뒤 따옴표 제거
         String unquoted = raw.substring(1, raw.length() - 1);
+
+        // 이스케이프 처리
+        return unquoted
+            .replace("\\\"", "\"")
+            .replace("\\\\", "\\")
+            .replace("\\n", "\n")
+            .replace("\\t", "\t");
+    }
+
+    /**
+     * 트리플 스트링 리터럴 추출 (""" ... """ 제거 및 이스케이프 처리)
+     */
+    private String extractTripleString(LPDLParser.TripleStringLiteralContext ctx) {
+        if (ctx == null || ctx.TRIPLE_STRING() == null) {
+            return "";
+        }
+
+        String raw = ctx.TRIPLE_STRING().getText();
+        // 앞뒤 """ 제거
+        String unquoted = raw.substring(3, raw.length() - 3);
 
         // 이스케이프 처리
         return unquoted

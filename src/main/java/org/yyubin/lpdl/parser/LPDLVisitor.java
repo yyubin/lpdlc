@@ -640,4 +640,16 @@ public interface LPDLVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitStringLiteral(LPDLParser.StringLiteralContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LPDLParser#tripleStringLiteral}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTripleStringLiteral(LPDLParser.TripleStringLiteralContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LPDLParser#textDecl}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTextDecl(LPDLParser.TextDeclContext ctx);
 }

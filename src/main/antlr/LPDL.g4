@@ -157,6 +157,7 @@ skillStmt
     | quantityStmt
     | keywordStmt
     | imageStmt
+    | textDecl
     | syncDecl
     ;
 
@@ -256,6 +257,7 @@ coinBody
 
 coinStmt
     : effectInlineDecl
+    | textDecl
     ;
 
 effectInlineDecl
@@ -281,6 +283,7 @@ passiveStmt
     | ACTION actionClause
     | actionSimple
     | branchBlock
+    | textDecl
     ;
 
 // ── ACTION STATEMENT ────────────────────────────────────────────────────────
@@ -513,6 +516,15 @@ stringLiteral
     : STRING
     ;
 
+tripleStringLiteral
+    : TRIPLE_STRING
+    ;
+
+// ── TEXT DECLARATION (원본 텍스트) ──────────────────────────────────────────
+textDecl
+    : TEXT tripleStringLiteral
+    ;
+
 // ─────────────────────────────────────────────────────────────────────────────
 // LEXER RULES
 // ─────────────────────────────────────────────────────────────────────────────
@@ -542,6 +554,7 @@ WITH        : 'with' ;
 BOOST       : 'boost' ;
 SUPPORT     : 'support' ;
 TYPE        : 'type' ;
+TEXT        : 'text' ;
 VALUE       : 'value' ;
 SKILL       : 'skill' ;
 CATEGORY    : 'category' ;
@@ -641,6 +654,10 @@ FALSE : 'false' ;
 
 STRING
     : '"' ( '\\' . | ~["\\\r\n] )* '"'
+    ;
+
+TRIPLE_STRING
+    : '"""' ( '\\' . | ~["\\] )*? '"""'
     ;
 
 // 식별자 (영문 + 숫자 + _)

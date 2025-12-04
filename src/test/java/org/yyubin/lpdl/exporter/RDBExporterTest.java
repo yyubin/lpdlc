@@ -31,7 +31,7 @@ class RDBExporterTest {
         assertTrue(sql.contains("SET @persona_1 = LAST_INSERT_ID()"), "Missing AUTO_INCREMENT variable assignment");
         // 변수 참조 확인
         assertTrue(sql.contains("WHERE id = @persona_1"), "Missing variable reference in WHERE clause");
-        assertTrue(sql.contains("UPDATE persona SET sinner_name = '홍루'"));
+        assertTrue(sql.contains("UPDATE persona SET sinner_id ="), "Should use snake_case: sinner_id");
         assertTrue(sql.contains("UPDATE persona SET grade = 'THREE'"));
 
         System.out.println("Generated SQL:");
@@ -326,7 +326,7 @@ class RDBExporterTest {
         // Persona 기본 검증
         assertTrue(sql.contains("INSERT INTO persona"), "Missing: INSERT INTO persona");
         assertTrue(sql.contains("'홍원 군주'"), "Missing: persona name");
-        assertTrue(sql.contains("sinner_name = '홍루'"), "Missing: sinner name");
+        assertTrue(sql.contains("sinner_id = 6"), "Missing: sinner ID");
         assertTrue(sql.contains("grade = 'THREE'"), "Missing: grade");
         assertTrue(sql.contains("release_date = '2025-08-14'"), "Missing: release date");
 
@@ -347,37 +347,27 @@ class RDBExporterTest {
         assertTrue(sql.contains("weight = 3"), "Missing: weight");
         assertTrue(sql.contains("level = 60"), "Missing: level");
 
-        // Effect 검증
-        assertTrue(sql.contains("INSERT INTO skill_effect"), "Missing: INSERT INTO skill_effect");
-        assertTrue(sql.contains("[공격시] 자신 회복 5") || sql.contains("공격시"), "Missing: effect name 1");
-        assertTrue(sql.contains("[사용시] 대상에게 출혈 3") || sql.contains("사용시"), "Missing: effect name 2");
-        assertTrue(sql.contains("[공격 종료시] 자신 혈찬 10") || sql.contains("공격 종료시"), "Missing: effect name 3");
-        assertTrue(sql.contains("ON_HIT") || sql.contains("\"trigger\":\"ON_HIT\""), "Missing: ON_HIT trigger");
-        assertTrue(sql.contains("ON_USE") || sql.contains("\"trigger\":\"ON_USE\""), "Missing: ON_USE trigger");
-        assertTrue(sql.contains("ON_ATTACK_END") || sql.contains("\"trigger\":\"ON_ATTACK_END\""), "Missing: ON_ATTACK_END trigger");
+        // Effect는 더 이상 파싱하지 않음 (RDB에서는 무시)
+        // 대신 text description을 확인해야 함 (하지만 이 테스트에는 text가 없음)
 
         // Coin 검증
         assertTrue(sql.contains("INSERT INTO skill_coin"), "Missing: INSERT INTO skill_coin");
-        assertTrue(sql.contains("coin_number, 0") || sql.contains("coin_number") && sql.contains(", 0"), "Missing: coin 0");
-        assertTrue(sql.contains("coin_number, 3") || sql.contains("coin_number") && sql.contains(", 3"), "Missing: coin 3");
+        assertTrue(sql.contains("order_index, 0") || sql.contains("order_index") && sql.contains(", 0"), "Missing: coin 0");
+        assertTrue(sql.contains("order_index, 3") || sql.contains("order_index") && sql.contains(", 3"), "Missing: coin 3");
         assertTrue(sql.contains("NORMAL"), "Missing: NORMAL damage type");
         assertTrue(sql.contains("INVINCIBLE"), "Missing: INVINCIBLE damage type");
 
-        // Coin Effect 검증
-        assertTrue(sql.contains("INSERT INTO coin_effect"), "Missing: INSERT INTO coin_effect");
-        assertTrue(sql.contains("출혈 횟수 2") || sql.contains("출혈"), "Missing: coin effect name 1");
-        assertTrue(sql.contains("라만차 퍼레이드 2") || sql.contains("라만차"), "Missing: coin effect name 2");
+        // Coin Effect는 더 이상 파싱하지 않음 (text 블록 사용)
 
         // Passive 검증
         assertTrue(sql.contains("INSERT INTO persona_passive"), "Missing: INSERT INTO persona_passive");
-        assertTrue(sql.contains("passive_type") && sql.contains("'NORMAL'"), "Missing: passive type");
+        assertTrue(sql.contains("kind") && sql.contains("'NORMAL'"), "Missing: kind = NORMAL");
         assertTrue(sql.contains("'피의 연회'"), "Missing: passive name");
 
         // AUTO_INCREMENT 변수 검증
         assertTrue(sql.contains("SET @persona_1 = LAST_INSERT_ID()"), "Missing: persona AUTO_INCREMENT");
         assertTrue(sql.contains("SET @skill_1 = LAST_INSERT_ID()"), "Missing: skill AUTO_INCREMENT");
         assertTrue(sql.contains("SET @skill_stats_by_sync_1 = LAST_INSERT_ID()"), "Missing: sync AUTO_INCREMENT");
-        assertTrue(sql.contains("SET @skill_effect_"), "Missing: effect AUTO_INCREMENT");
         assertTrue(sql.contains("SET @skill_coin_"), "Missing: coin AUTO_INCREMENT");
         assertTrue(sql.contains("SET @persona_passive_"), "Missing: passive AUTO_INCREMENT");
 

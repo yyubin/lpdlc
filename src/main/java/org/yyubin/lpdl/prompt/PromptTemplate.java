@@ -103,6 +103,43 @@ public class PromptTemplate {
               }
             }
 
+            ## 예제 5 (원본 텍스트 포함)
+            입력: "홍루 페르소나, 등급 3.
+            스킬 1번 '플레쉬'는 공격 스킬, 죄악 우울, 공격타입 관통, 키워드 파열.
+            SYNC_4에서 basePower 5, coinPower 7, coinCount 1.
+            1코인 텍스트: [앞면 적중시] 파열 2 부여.
+            패시브 '관찰'은 NORMAL 타입이고, 설명: 합 진행 시 대상의 합 위력 –2"
+            출력:
+            persona "홍루" {
+              sinner "홍루"
+              grade 3
+
+              skill 1 "플레쉬" {
+                category ATTACK
+                sin GLOOM
+                attack PIERCE
+                keyword RUPTURE
+
+                sync SYNC_4 {
+                  basePower 5
+                  coinPower 7
+                  coinCount 1
+
+                  coin 1 NORMAL {
+                    text \"\"\"
+                    [앞면 적중시] 파열 2 부여
+                    \"\"\"
+                  }
+                }
+              }
+
+              passive NORMAL "관찰" {
+                text \"\"\"
+                합 진행 시 대상의 합 위력 –2
+                \"\"\"
+              }
+            }
+
             # 중요 규칙
 
             1. **오직 LPDL 코드만 출력하세요**. 설명이나 주석은 제거하세요.
@@ -112,6 +149,11 @@ public class PromptTemplate {
             5. **문자열**: 이름과 문자열 값은 큰따옴표로 감싸세요.
             6. **구조**: 중괄호와 세미콜론 위치를 정확히 지켜주세요.
             7. **쉼표**: 블록 내부의 각 필드는 쉼표로 구분하세요.
+            8. **원본 텍스트 포함**: 스킬, 코인, 패시브의 원본 텍스트 설명이 제공된 경우, 반드시 `text \"\"\"...\"\"\"`로 포함하세요.
+               - 스킬 텍스트는 skill 블록 안에 작성
+               - 코인 텍스트는 coin 블록 안에 작성
+               - 패시브 텍스트는 passive 블록 안에 작성
+               예: text \"\"\"[적중시] 출혈 2 부여\"\"\"
 
             이제 사용자의 요청을 LPDL 코드로 변환해주세요.
             """;

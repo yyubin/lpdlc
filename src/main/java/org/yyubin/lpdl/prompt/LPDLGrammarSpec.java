@@ -85,6 +85,12 @@ public class LPDLGrammarSpec {
               keyword BLEED|CHARGE|BREATHE|...
               image "URL" 또는 none
 
+              // === 원본 텍스트 (선택, 여러 줄 가능) ===
+              text \"\"\"
+              스킬의 원본 설명 텍스트
+              여러 줄로 작성 가능
+              \"\"\"
+
               // === Sync 레벨별 스탯 ===
               sync SYNC_3|SYNC_4 {
                 basePower 숫자
@@ -103,6 +109,11 @@ public class LPDLGrammarSpec {
 
                 // 코인별 효과 (여러 개 가능)
                 coin 번호 NORMAL|UNBREAKABLE|REUSE { // 일반 코인|파괴불가 코인|재사용 코인
+                  // 코인 원본 텍스트 (선택)
+                  text \"\"\"
+                  [적중시] 출혈 2 부여
+                  \"\"\"
+
                   effect "효과 이름" {
                     trigger ON_HIT|...
                     <actions>
@@ -209,6 +220,12 @@ public class LPDLGrammarSpec {
 
             ```lpdl
             passive NORMAL|SUPPORT "패시브 이름" {
+              // === 원본 텍스트 (선택, 여러 줄 가능) ===
+              text \"\"\"
+              패시브의 원본 설명 텍스트
+              합 진행 시 대상의 합 위력 –2
+              \"\"\"
+
               trigger BATTLE_START|ON_TURN_START|...
 
               // 선택: 조건
@@ -293,6 +310,7 @@ public class LPDLGrammarSpec {
             6. **숫자**: grade는 1, 2, 3 중 하나 (숫자 또는 ★ 표기)
             7. **Enum**: 대문자와 언더스코어 조합
             8. **주석**: // 또는 /* */ 사용 가능
+            9. **원본 텍스트**: 스킬, 코인, 패시브에 원본 텍스트를 포함할 경우 `text \"\"\"...\"\"\"`로 작성 (삼중 따옴표 사용, 여러 줄 가능)
             """;
     }
 }

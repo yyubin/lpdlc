@@ -1057,4 +1057,24 @@ public interface LPDLListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitStringLiteral(LPDLParser.StringLiteralContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LPDLParser#tripleStringLiteral}.
+	 * @param ctx the parse tree
+	 */
+	void enterTripleStringLiteral(LPDLParser.TripleStringLiteralContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LPDLParser#tripleStringLiteral}.
+	 * @param ctx the parse tree
+	 */
+	void exitTripleStringLiteral(LPDLParser.TripleStringLiteralContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LPDLParser#textDecl}.
+	 * @param ctx the parse tree
+	 */
+	void enterTextDecl(LPDLParser.TextDeclContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LPDLParser#textDecl}.
+	 * @param ctx the parse tree
+	 */
+	void exitTextDecl(LPDLParser.TextDeclContext ctx);
 }
