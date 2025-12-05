@@ -7,6 +7,7 @@ import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.yyubin.lpdl.exporter.RDBExporter;
+import org.yyubin.lpdl.exporter.Neo4jExporter;
 import org.yyubin.lpdl.parser.LPDLLexer;
 import org.yyubin.lpdl.parser.LPDLParser;
 
@@ -37,14 +38,24 @@ public class Main {
 
         try {
             String sql = compileLPDL(inputPath);
+            String cypher = compileToNeo4j(inputPath);
 
             if (outputPath != null) {
-                // 파일로 저장
+                // SQL 파일로 저장
                 Files.writeString(Paths.get(outputPath), sql);
                 System.out.println("✓ SQL이 성공적으로 생성되었습니다: " + outputPath);
+
+                // Cypher 파일도 저장
+                String cypherPath = outputPath.replace(".sql", ".cypher");
+                Files.writeString(Paths.get(cypherPath), cypher);
+                System.out.println("✓ Cypher 쿼리가 성공적으로 생성되었습니다: " + cypherPath);
             } else {
                 // 콘솔에 출력
+                System.out.println("=== SQL ===");
                 System.out.println(sql);
+                System.out.println();
+                System.out.println("=== Neo4j Cypher ===");
+                System.out.println(cypher);
             }
 
         } catch (LPDLCompileException e) {
@@ -100,6 +111,48 @@ public class Main {
         String sql = exporter.export(programCtx);
 
         return sql;
+    }
+
+    private static String compileToNeo4j(String inputPath) throws IOException, LPDLCompileException {
+        Path path = Paths.get(inputPath);
+
+        if (!Files.exists(path)) {
+            throw new LPDLCompileException("파일을 찾을 수 없습니다: " + inputPath);
+        }
+
+        // 파일 읽기
+        String lpdlCode = Files.readString(path);
+
+        // ANTLR 파싱
+        CharStream input = CharStreams.fromString(lpdlCode);
+        LPDLLexer lexer = new LPDLLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        LPDLParser parser = new LPDLParser(tokens);
+
+        // 파싱 에러 수집
+        parser.removeErrorListeners();
+        parser.addErrorListener(new BaseErrorListener() {
+            @Override
+            public void syntaxError(Recognizer<?, ?> recognizer,
+                                    Object offendingSymbol,
+                                    int line,
+                                    int charPositionInLine,
+                                    String msg,
+                                    RecognitionException e) {
+                throw new LPDLCompileException(
+                    String.format("%s:%d:%d - %s", inputPath, line, charPositionInLine, msg)
+                );
+            }
+        });
+
+        // 파싱
+        LPDLParser.ProgramContext programCtx = parser.program();
+
+        // Neo4j Cypher 변환
+        Neo4jExporter exporter = new Neo4jExporter();
+        String cypher = exporter.export(programCtx);
+
+        return cypher;
     }
 
     private static void printUsage() {

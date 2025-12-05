@@ -95,13 +95,17 @@ class LPDLParserTest {
 
                   effect "테스트 효과" {
                     trigger ON_USE
-                    target apply BLEED ADD 2 cap 10
+                    target apply BLEED +2
                   }
 
                   coin 1 POSITIVE {
+                    text \"""
+                    [적중시] 출혈 1 부여
+                    \"""
+
                     effect {
                       trigger ON_HIT
-                      target apply BLEED ADD 1
+                      target apply BLEED +1
                     }
                   }
                 }

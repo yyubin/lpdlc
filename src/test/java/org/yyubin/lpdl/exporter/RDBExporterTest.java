@@ -295,6 +295,10 @@ class RDBExporterTest {
                         }
 
                         coin 0 NORMAL {
+                            text \"""
+                            [적중시] 출혈 횟수 2 부여
+                            \"""
+
                             effect "출혈 횟수 2" {
                                 trigger ON_HIT
                                 target apply BLEED_COUNT +2
@@ -302,6 +306,10 @@ class RDBExporterTest {
                         }
 
                         coin 3 INVINCIBLE {
+                            text \"""
+                            [적중시] 라만차 퍼레이드 2 부여
+                            \"""
+
                             effect "라만차 퍼레이드 2" {
                                 trigger ON_HIT
                                 target apply LAMANCHA_PAR +2
@@ -311,8 +319,11 @@ class RDBExporterTest {
                 }
 
                 passive NORMAL "피의 연회" {
-                    trigger ON_TURN_START
-                    self apply BLEED_BOOST +2
+                    text \"""
+                    턴 시작 시 출혈 부스트 2 부여
+                    \"""
+
+                    condition RESONATE sin LUST count 4
                 }
             }
             """;
