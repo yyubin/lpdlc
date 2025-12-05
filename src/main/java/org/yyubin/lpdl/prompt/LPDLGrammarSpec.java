@@ -24,7 +24,9 @@ public class LPDLGrammarSpec {
               grade 1|2|3           // 또는 grade 1★, grade TWO
 
               // === 선택 필드 ===
+              // IMPORTANT: sin은 정확히 다음 7가지 값만 허용됩니다 (다른 값은 파서 에러):
               sin WRATH|LUST|SLOTH|GREED|GLOOM|PRIDE|ENVY
+              // 주의: GLUTTONY는 존재하지 않음. GREED를 사용하세요.
               release "YYYY-MM-DD"
               maxLevel 숫자
 
@@ -78,7 +80,9 @@ public class LPDLGrammarSpec {
             skill 번호 "스킬 이름" {
               // === 필수/선택 필드 ===
               category ATTACK|DEFENSE
+              // IMPORTANT: sin은 정확히 다음 7가지 값만 허용됩니다:
               sin WRATH|LUST|SLOTH|GREED|GLOOM|PRIDE|ENVY
+              // 주의: GLUTTONY는 존재하지 않음. GREED를 사용하세요.
               attack SLASH|PIERCE|BLUNT    // ATTACK 스킬만
               defense EVADE|COUNTER|GUARD  // DEFENSE 스킬만
               quantity 1|2|3               // 스킬 개수

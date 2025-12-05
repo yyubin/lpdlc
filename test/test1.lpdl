@@ -1,0 +1,133 @@
+persona "남부 세븐 협회 6과" {
+  sinner "이상"
+  grade 2
+  release "2023-02-27"
+
+  resistance {
+    slash NORMAL,
+    pierce RESIST,
+    blunt WEAK
+  }
+
+  speed {
+    min 4,
+    max 8
+  }
+
+  health {
+    base 82,
+    growth 2.82,
+    disturbed [60, 30]
+  }
+
+  skill 1 "플레쉬" {
+    category ATTACK
+    sin GLOOM
+    attack PIERCE
+    keyword RUPTURE
+
+    sync SYNC_4 {
+      basePower 5
+      coinPower 7
+      coinCount 1
+      weight 1
+      level 0
+
+      coin 1 NORMAL {
+        text """
+        [앞면 적중시] 파열 2 부여
+        """
+      }
+    }
+  }
+
+  skill 2 "리포스트" {
+    category ATTACK
+    sin GREED
+    attack PIERCE
+    keyword RUPTURE
+
+    sync SYNC_4 {
+      basePower 5
+      coinPower 4
+      coinCount 2
+      weight 1
+      level 0
+
+      effect "기본 텍스트" {
+        trigger ON_WIN_CLASH
+        target apply PARALYSIS +3 nextTurn true
+        target apply RUPTURE +1
+      }
+
+      coin 2 NORMAL {
+        text """
+        [적중시] 다음 턴에 취약 1 부여
+        [적중시] 파열 1 부여
+        """
+      }
+    }
+  }
+
+  skill 3 "물리네" {
+    category ATTACK
+    sin SLOTH
+    attack BLUNT
+    keyword RUPTURE
+
+    sync SYNC_4 {
+      basePower 5
+      coinPower 3
+      coinCount 3
+      weight 1
+      level 0
+
+      coin 1 NORMAL {
+        text """
+        [적중시] 마지막 코인의 효과 부여 값 + 1
+        """
+      }
+
+      coin 2 NORMAL {
+        text """
+        [적중시] 마지막 코인의 효과 부여 값 + 1
+        """
+      }
+
+      coin 3 NORMAL {
+        text """
+        [적중시] 다음 턴에 관통 취약 1 부여
+        [적중시] 파열 1 부여
+        """
+      }
+    }
+  }
+
+  skill 4 "가드" {
+    category DEFENSE
+    sin GREED
+    defense GUARD
+
+    sync SYNC_4 {
+      basePower 9
+      coinPower 3
+      coinCount 1
+      weight 1
+      level 2
+    }
+  }
+
+  passive NORMAL "관찰" {
+    text """
+    합 진행 시 대상의 합 위력 –2
+    """
+    trigger ON_CLASH
+  }
+
+  passive SUPPORT "분석" {
+    text """
+    최대 체력이 가장 높은 아군 1명 합 진행 시 합 위력 +1
+    """
+    trigger ON_CLASH
+  }
+}

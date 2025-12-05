@@ -50,7 +50,11 @@ gradeValue
 
 // sin WRATH
 sinStmt
-    : SIN IDENT
+    : SIN sinAffinityType
+    ;
+
+sinAffinityType
+    : WRATH | LUST | SLOTH | GREED | GLOOM | PRIDE | ENVY
     ;
 
 // release "2023-05-15"
@@ -162,7 +166,7 @@ skillStmt
     ;
 
 categoryStmt : CATEGORY IDENT ;
-skillSinStmt : SIN IDENT ;
+skillSinStmt : SIN sinAffinityType ;
 attackStmt   : ATTACK IDENT ;
 defenseStmt  : DEFENSE IDENT ;
 quantityStmt : QUANTITY INT ;
@@ -659,6 +663,15 @@ STRING
 TRIPLE_STRING
     : '"""' ( '\\' . | ~["\\] )*? '"""'
     ;
+
+// Sin Affinity Enum
+WRATH  : 'WRATH' ;
+LUST   : 'LUST' ;
+SLOTH  : 'SLOTH' ;
+GREED  : 'GREED' ;
+GLOOM  : 'GLOOM' ;
+PRIDE  : 'PRIDE' ;
+ENVY   : 'ENVY' ;
 
 // 식별자 (영문 + 숫자 + _)
 // 한글 지원은 임시로 비활성화 (ATN 크기 문제)
