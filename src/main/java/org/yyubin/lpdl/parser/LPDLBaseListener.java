@@ -101,6 +101,18 @@ public class LPDLBaseListener implements LPDLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterSinAffinityType(LPDLParser.SinAffinityTypeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSinAffinityType(LPDLParser.SinAffinityTypeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterReleaseStmt(LPDLParser.ReleaseStmtContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -120,6 +132,18 @@ public class LPDLBaseListener implements LPDLListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitMaxLevelStmt(LPDLParser.MaxLevelStmtContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterDefenseLevelStmt(LPDLParser.DefenseLevelStmtContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDefenseLevelStmt(LPDLParser.DefenseLevelStmtContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -677,18 +701,6 @@ public class LPDLBaseListener implements LPDLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterCoinStmt(LPDLParser.CoinStmtContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitCoinStmt(LPDLParser.CoinStmtContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterEffectInlineDecl(LPDLParser.EffectInlineDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -744,6 +756,30 @@ public class LPDLBaseListener implements LPDLListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitPassiveStmt(LPDLParser.PassiveStmtContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterPassiveConditionStmt(LPDLParser.PassiveConditionStmtContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPassiveConditionStmt(LPDLParser.PassiveConditionStmtContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterPassiveSyncLevelStmt(LPDLParser.PassiveSyncLevelStmtContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPassiveSyncLevelStmt(LPDLParser.PassiveSyncLevelStmtContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

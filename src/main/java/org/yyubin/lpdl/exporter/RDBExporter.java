@@ -89,6 +89,15 @@ public class RDBExporter extends LPDLBaseVisitor<Void> {
             }
         }
 
+        // Season이 설정되지 않았으면 기본값(NORMAL, 0) 설정
+        if (!context.isSeasonSet(personaId)) {
+            sqlGenerator.update("persona")
+                .set("season_type", "NORMAL")
+                .set("season_number", 0)
+                .where("id", new SQLVariable(personaVar))
+                .generate();
+        }
+
         context.exitPersona();
         return null;
     }
@@ -173,6 +182,20 @@ public class RDBExporter extends LPDLBaseVisitor<Void> {
 
         sqlGenerator.update("persona")
             .set("max_level", maxLevel)
+            .where("id", personaVar)
+            .generate();
+
+        return null;
+    }
+
+    @Override
+    public Void visitDefenseLevelStmt(LPDLParser.DefenseLevelStmtContext ctx) {
+        long personaId = context.getCurrentPersonaId();
+        SQLVariable personaVar = new SQLVariable("persona_" + personaId);
+        int defenseLevel = Integer.parseInt(ctx.INT().getText());
+
+        sqlGenerator.update("persona")
+            .set("defense_level", defenseLevel)
             .where("id", personaVar)
             .generate();
 
@@ -268,6 +291,9 @@ public class RDBExporter extends LPDLBaseVisitor<Void> {
         var updateBuilder = sqlGenerator.update("persona");
         season.forEach(updateBuilder::set);
         updateBuilder.where("id", personaVar).generate();
+
+        // Season이 설정되었음을 표시
+        context.setSeasonSet(personaId);
 
         return null;
     }
@@ -366,7 +392,7 @@ public class RDBExporter extends LPDLBaseVisitor<Void> {
     public Void visitSkillSinStmt(LPDLParser.SkillSinStmtContext ctx) {
         long skillId = context.getCurrentSkillId();
         SQLVariable skillVar = new SQLVariable("skill_" + skillId);
-        String sin = ctx.IDENT().getText();
+        String sin = ctx.sinAffinityType().getText();
 
         sqlGenerator.update("skill")
             .set("sin_affinity", sin)
@@ -640,10 +666,15 @@ public class RDBExporter extends LPDLBaseVisitor<Void> {
             .value("coin_type", damageType)
             .generateWithAutoId(coinVar);
 
-        // coin body 순회
+        // coin body 순회 (text와 effect를 개별 방문)
         if (ctx.coinBody() != null) {
-            for (var stmt : ctx.coinBody().coinStmt()) {
-                visit(stmt);
+            // text 방문
+            if (ctx.coinBody().textDecl() != null) {
+                visit(ctx.coinBody().textDecl());
+            }
+            // effect들 방문 (effectInlineDecl은 RDB에서 무시됨)
+            for (var effect : ctx.coinBody().effectInlineDecl()) {
+                visit(effect);
             }
         }
 
@@ -678,18 +709,48 @@ public class RDBExporter extends LPDLBaseVisitor<Void> {
             passiveName = extractString(ctx.stringLiteral());
         }
 
+        // Passive 조건 필드들
+        String conditionType = null;
+        String conditionSin = null;
+        Integer conditionCount = null;
+        String syncLevel = null;
+
+        // passive body 순회 - text, condition, syncLevel 처리
+        if (ctx.passiveBody() != null) {
+            for (var stmt : ctx.passiveBody().passiveStmt()) {
+                if (stmt.textDecl() != null) {
+                    // passive_description 테이블에 저장 (나중에 처리)
+                } else if (stmt.passiveConditionStmt() != null) {
+                    // condition HOLD sin WRATH count 3
+                    var condStmt = stmt.passiveConditionStmt();
+                    conditionType = condStmt.IDENT().getText();  // HOLD, RESONATE
+                    conditionSin = condStmt.sinAffinityType().getText();  // WRATH, LUST...
+                    if (condStmt.INT() != null) {
+                        conditionCount = Integer.parseInt(condStmt.INT().getText());
+                    }
+                } else if (stmt.passiveSyncLevelStmt() != null) {
+                    // syncLevel SYNC_3
+                    syncLevel = stmt.passiveSyncLevelStmt().IDENT().getText();  // SYNC_1, SYNC_2...
+                }
+                // 다른 stmt는 무시 (trigger, action 등은 RDB에서 저장 안 함)
+            }
+        }
+
         // INSERT persona_passive (id는 AUTO_INCREMENT)
         sqlGenerator.insert("persona_passive")
             .value("persona_id", personaVar)
             .value("kind", kind)
             .value("name", passiveName)
+            .value("condition_type", conditionType)
+            .value("condition_sin_affinity", conditionSin)
+            .value("condition_count", conditionCount)
+            .value("sync_level", syncLevel)
             .generateWithAutoId(passiveVar);
 
-        // passive body 순회 - text를 찾아서 passive_description에 저장
+        // text 처리 - passive_description에 저장
         if (ctx.passiveBody() != null) {
             for (var stmt : ctx.passiveBody().passiveStmt()) {
                 if (stmt.textDecl() != null) {
-                    // passive_description 테이블에 저장
                     String originalText = extractTripleString(stmt.textDecl().tripleStringLiteral());
                     long descId = idManager.nextId("passive_description");
                     String descVar = "passive_description_" + descId;
@@ -698,8 +759,6 @@ public class RDBExporter extends LPDLBaseVisitor<Void> {
                         .value("persona_passive_id", new SQLVariable(passiveVar))
                         .value("original_text", originalText)
                         .generateWithAutoId(descVar);
-                } else {
-                    // 다른 stmt는 무시 (trigger, action 등)
                 }
             }
         }

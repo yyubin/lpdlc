@@ -78,6 +78,16 @@ public interface LPDLListener extends ParseTreeListener {
 	 */
 	void exitSinStmt(LPDLParser.SinStmtContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link LPDLParser#sinAffinityType}.
+	 * @param ctx the parse tree
+	 */
+	void enterSinAffinityType(LPDLParser.SinAffinityTypeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LPDLParser#sinAffinityType}.
+	 * @param ctx the parse tree
+	 */
+	void exitSinAffinityType(LPDLParser.SinAffinityTypeContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link LPDLParser#releaseStmt}.
 	 * @param ctx the parse tree
 	 */
@@ -97,6 +107,16 @@ public interface LPDLListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitMaxLevelStmt(LPDLParser.MaxLevelStmtContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LPDLParser#defenseLevelStmt}.
+	 * @param ctx the parse tree
+	 */
+	void enterDefenseLevelStmt(LPDLParser.DefenseLevelStmtContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LPDLParser#defenseLevelStmt}.
+	 * @param ctx the parse tree
+	 */
+	void exitDefenseLevelStmt(LPDLParser.DefenseLevelStmtContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link LPDLParser#sinnerStmt}.
 	 * @param ctx the parse tree
@@ -558,16 +578,6 @@ public interface LPDLListener extends ParseTreeListener {
 	 */
 	void exitCoinBody(LPDLParser.CoinBodyContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link LPDLParser#coinStmt}.
-	 * @param ctx the parse tree
-	 */
-	void enterCoinStmt(LPDLParser.CoinStmtContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link LPDLParser#coinStmt}.
-	 * @param ctx the parse tree
-	 */
-	void exitCoinStmt(LPDLParser.CoinStmtContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link LPDLParser#effectInlineDecl}.
 	 * @param ctx the parse tree
 	 */
@@ -617,6 +627,26 @@ public interface LPDLListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitPassiveStmt(LPDLParser.PassiveStmtContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LPDLParser#passiveConditionStmt}.
+	 * @param ctx the parse tree
+	 */
+	void enterPassiveConditionStmt(LPDLParser.PassiveConditionStmtContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LPDLParser#passiveConditionStmt}.
+	 * @param ctx the parse tree
+	 */
+	void exitPassiveConditionStmt(LPDLParser.PassiveConditionStmtContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LPDLParser#passiveSyncLevelStmt}.
+	 * @param ctx the parse tree
+	 */
+	void enterPassiveSyncLevelStmt(LPDLParser.PassiveSyncLevelStmtContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LPDLParser#passiveSyncLevelStmt}.
+	 * @param ctx the parse tree
+	 */
+	void exitPassiveSyncLevelStmt(LPDLParser.PassiveSyncLevelStmtContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link LPDLParser#actionStmt}.
 	 * @param ctx the parse tree

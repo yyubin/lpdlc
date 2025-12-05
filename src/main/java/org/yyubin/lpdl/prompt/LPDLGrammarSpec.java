@@ -28,7 +28,8 @@ public class LPDLGrammarSpec {
               sin WRATH|LUST|SLOTH|GREED|GLOOM|PRIDE|ENVY
               // 주의: GLUTTONY는 존재하지 않음. GREED를 사용하세요.
               release "YYYY-MM-DD"
-              maxLevel 숫자
+              maxLevel 숫자        // 최대 레벨 (기본: 50)
+              defenseLevel 숫자    // 방어 레벨
 
               // 저항
               resistance {
@@ -50,11 +51,15 @@ public class LPDLGrammarSpec {
                 disturbed [숫자, 숫자, 숫자]
               }
 
-              // 시즌
+              // 시즌 (필수! 생략 시 자동으로 type: NORMAL, number: 0 설정됨)
               season {
                 type NORMAL|SEASON_NORMAL|SEASON_EVENT|WALPURGISNACHT,
                 number 숫자
               }
+              // NORMAL: 일반 인격 (기본값)
+              // SEASON_NORMAL: 시즌 일반 인격
+              // SEASON_EVENT: 시즌 이벤트 인격
+              // WALPURGISNACHT: 발푸르기스의 밤 인격
 
               // 이미지 (여러 개 가능)
               image {
@@ -105,6 +110,11 @@ public class LPDLGrammarSpec {
 
                 // 스킬 전체 효과 (여러 개 가능)
                 effect "효과 이름" {
+                  // 원본 텍스트 (선택, 추천!)
+                  text \"\"\"
+                  [합 승리시] 다음 턴에 마비 3 부여
+                  \"\"\"
+
                   trigger ON_USE|ON_HIT|ON_ATTACK_END|...
 
                   // 액션들
@@ -112,14 +122,22 @@ public class LPDLGrammarSpec {
                 }
 
                 // 코인별 효과 (여러 개 가능)
+                // 🔥 IMPORTANT: coin은 반드시 text와 effect를 **모두** 포함해야 함!
                 coin 번호 NORMAL|UNBREAKABLE|REUSE { // 일반 코인|파괴불가 코인|재사용 코인
-                  // 코인 원본 텍스트 (선택)
+                  // 1. 코인 원본 텍스트 (필수!)
                   text \"\"\"
                   [적중시] 출혈 2 부여
                   \"\"\"
 
+                  // 2. 구조화된 효과 (필수! 최소 1개 이상)
                   effect "효과 이름" {
-                    trigger ON_HIT|...
+                    trigger ON_HIT|ON_HEAD_HIT|...
+                    <actions>
+                  }
+
+                  // 추가 효과가 있으면 effect 블록을 더 작성 가능
+                  effect "추가 효과" {
+                    trigger ON_CRITICAL_HIT
                     <actions>
                   }
                 }
@@ -179,12 +197,20 @@ public class LPDLGrammarSpec {
             - heal         // 회복
             - modify       // 수정 (power, coinPower 등)
 
+            // 코인 선택자 (coins 옵션)
+            - coins LAST   // 마지막 코인
+            - coins FIRST  // 첫 번째 코인
+            - coins ALL    // 모든 코인
+            - coins CURRENT // 현재 코인
+            - coins INDEX 3 // 특정 코인 (3번)
+
             // 예시
             self apply HP_HEAL +5
             target apply BLEED +3
             self remove CHARGE 10
             target apply BLEED ADD 2 nextTurn false
             modify power +30
+            modify power +1 coins LAST  // 마지막 코인 위력 증가
             ```
 
             ### 조건 분기 (Branch)
@@ -229,6 +255,17 @@ public class LPDLGrammarSpec {
               패시브의 원본 설명 텍스트
               합 진행 시 대상의 합 위력 –2
               \"\"\"
+
+              // === 패시브 조건 (선택) ===
+              condition HOLD|RESONATE sin WRATH|LUST|SLOTH|GREED|GLOOM|PRIDE|ENVY count 숫자
+              // HOLD: 특정 죄악을 보유할 때 활성화
+              // RESONATE: 특정 죄악으로 공명할 때 활성화
+              // 예: condition HOLD sin WRATH count 3  // 분노 3개 보유 시
+
+              // === Sync 레벨 (선택) ===
+              syncLevel SYNC_1|SYNC_2|SYNC_3|SYNC_4
+              // 특정 동조 레벨에서 활성화
+              // 예: syncLevel SYNC_3
 
               trigger BATTLE_START|ON_TURN_START|...
 

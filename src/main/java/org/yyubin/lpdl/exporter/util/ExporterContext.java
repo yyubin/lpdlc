@@ -2,6 +2,8 @@ package org.yyubin.lpdl.exporter.util;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Exporter 실행 컨텍스트 관리
@@ -20,6 +22,9 @@ public class ExporterContext {
     private final Deque<Long> coinIdStack;
     private final Deque<Long> passiveIdStack;
 
+    // Season 설정 추적
+    private final Map<Long, Boolean> seasonSetMap;
+
     // Neo4j용 변수명 스택 (향후 사용)
     private final Deque<String> personaVarStack;
     private final Deque<String> skillVarStack;
@@ -34,6 +39,7 @@ public class ExporterContext {
         this.passiveIdStack = new ArrayDeque<>();
         this.personaVarStack = new ArrayDeque<>();
         this.skillVarStack = new ArrayDeque<>();
+        this.seasonSetMap = new HashMap<>();
     }
 
     // ─── Persona ───
@@ -218,6 +224,15 @@ public class ExporterContext {
         return personaVarStack.peek();
     }
 
+    // ─── Season 설정 추적 ───
+    public void setSeasonSet(long personaId) {
+        seasonSetMap.put(personaId, true);
+    }
+
+    public boolean isSeasonSet(long personaId) {
+        return seasonSetMap.getOrDefault(personaId, false);
+    }
+
     public void reset() {
         personaIdStack.clear();
         skillIdStack.clear();
@@ -228,5 +243,6 @@ public class ExporterContext {
         passiveIdStack.clear();
         personaVarStack.clear();
         skillVarStack.clear();
+        seasonSetMap.clear();
     }
 }

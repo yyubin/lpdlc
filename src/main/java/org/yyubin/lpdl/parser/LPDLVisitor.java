@@ -53,6 +53,12 @@ public interface LPDLVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitSinStmt(LPDLParser.SinStmtContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link LPDLParser#sinAffinityType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSinAffinityType(LPDLParser.SinAffinityTypeContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link LPDLParser#releaseStmt}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -64,6 +70,12 @@ public interface LPDLVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitMaxLevelStmt(LPDLParser.MaxLevelStmtContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LPDLParser#defenseLevelStmt}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDefenseLevelStmt(LPDLParser.DefenseLevelStmtContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link LPDLParser#sinnerStmt}.
 	 * @param ctx the parse tree
@@ -341,12 +353,6 @@ public interface LPDLVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCoinBody(LPDLParser.CoinBodyContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link LPDLParser#coinStmt}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitCoinStmt(LPDLParser.CoinStmtContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link LPDLParser#effectInlineDecl}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -376,6 +382,18 @@ public interface LPDLVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitPassiveStmt(LPDLParser.PassiveStmtContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LPDLParser#passiveConditionStmt}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPassiveConditionStmt(LPDLParser.PassiveConditionStmtContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LPDLParser#passiveSyncLevelStmt}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPassiveSyncLevelStmt(LPDLParser.PassiveSyncLevelStmtContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link LPDLParser#actionStmt}.
 	 * @param ctx the parse tree

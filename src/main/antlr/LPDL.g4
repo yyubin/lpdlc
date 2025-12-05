@@ -27,6 +27,7 @@ personaStmt
     | sinStmt
     | releaseStmt
     | maxLevelStmt
+    | defenseLevelStmt
     | resistanceStmt
     | speedStmt
     | healthStmt
@@ -65,6 +66,11 @@ releaseStmt
 // maxLevel 60
 maxLevelStmt
     : MAXLEVEL INT
+    ;
+
+// defenseLevel 5
+defenseLevelStmt
+    : DEFENSELEVEL INT
     ;
 
 // sinner "홍루" 또는 sinner HONGLU
@@ -218,7 +224,8 @@ effectBody
     ;
 
 effectStmt
-    : triggerStmt
+    : textDecl
+    | triggerStmt
     | whenStmt
     | branchBlock
     | ACTION actionClause
@@ -251,18 +258,16 @@ orderStmt        : ORDER INT ;
 stopOnMatchStmt  : STOPONMATCH booleanLiteral ;
 
 // ── COIN DECLARATION ────────────────────────────────────────────────────────
+// IMPORTANT: coin은 반드시 text와 effect를 모두 포함해야 함
 coinDecl
     : COIN INT IDENT coinBody
     ;
 
 coinBody
-    : LBRACE coinStmt* RBRACE
+    : LBRACE textDecl effectInlineDecl+ RBRACE
     ;
 
-coinStmt
-    : effectInlineDecl
-    | textDecl
-    ;
+// 참고: coinStmt는 더 이상 사용하지 않음 (text와 effect를 직접 명시)
 
 effectInlineDecl
     : EFFECT effectInlineHeader? effectBody
@@ -288,6 +293,18 @@ passiveStmt
     | actionSimple
     | branchBlock
     | textDecl
+    | passiveConditionStmt
+    | passiveSyncLevelStmt
+    ;
+
+// condition HOLD sin WRATH count 3
+passiveConditionStmt
+    : CONDITION IDENT SIN sinAffinityType (COUNT INT)?
+    ;
+
+// syncLevel SYNC_3
+passiveSyncLevelStmt
+    : SYNCLEVEL IDENT
     ;
 
 // ── ACTION STATEMENT ────────────────────────────────────────────────────────
@@ -540,9 +557,10 @@ ADD         : 'add' ;
 GRADE       : 'grade' ;
 SINNER      : 'sinner' ;
 SIN         : 'sin' ;
-RELEASE     : 'release' ;
-MAXLEVEL    : 'maxLevel' ;
-RESISTANCE  : 'resistance' ;
+RELEASE      : 'release' ;
+MAXLEVEL     : 'maxLevel' ;
+DEFENSELEVEL : 'defenseLevel' ;
+RESISTANCE   : 'resistance' ;
 SPEED       : 'speed' ;
 HEALTH      : 'health' ;
 BASE        : 'base' ;
@@ -582,6 +600,9 @@ ORDER       : 'order' ;
 STOPONMATCH : 'stopOnMatch' ;
 COIN        : 'coin' ;
 PASSIVE     : 'passive' ;
+CONDITION   : 'condition' ;
+COUNT       : 'count' ;
+SYNCLEVEL   : 'syncLevel' ;
 ACTION      : 'action' ;
 APPLY       : 'apply' ;
 REMOVE      : 'remove' ;
